@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Product;
+
 
 class ProductsController extends Controller
 {
@@ -25,7 +27,27 @@ class ProductsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        $product = new Product();
+        $product->name = $request->name;
+        $product->description = $request->desc;
+        $product->price = $request->price;
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $name = time() .'.' . $image->getClientOriginalExtension();
+            $destinationPath = public_path('/uploads/products');
+            $imagePath = $destinationPath. "/".  $name;
+            $image->move($destinationPath, $name);
+            $product->image = $name;
+        }
+
+        $product->save();
+
+        return response()->json(['message' => 'Product created successfully.'], 200);
     }
 
     /**
