@@ -34,18 +34,20 @@ class ProductsController extends Controller
 
         $product = new Product();
         $product->name = $request->name;
-        $product->description = $request->desc;
+        $product->description = $request->description;
         $product->price = $request->price;
 
         if ($request->hasFile('image')) {
+            if ($request->file('photo')->isValid()) {
+                $path = $request->file('image')->storePublicly('/public');
+    
+                $product->image = Storage::url($path);
+            }
             // $image = $request->file('image');
             // $name = time() .'.' . $image->getClientOriginalExtension();
             // $destinationPath = public_path('/uploads/products');
             // $imagePath = $destinationPath. '/' .  $name;
             // $image->move($destinationPath, $name);
-            $path = $request->file('image')->storePublicly('/public');
-
-            $product->image = Storage::url($path);
         }
 
         $product->save();
