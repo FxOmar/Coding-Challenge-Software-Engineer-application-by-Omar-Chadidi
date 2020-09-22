@@ -15,5 +15,4 @@ use App\Http\Controllers\ProductsController;
 |
 */
 
-Route::get('products', [ProductsController::class, "index"]);
-Route::post('products', [ProductsController::class, "store"]);
+Route::resource('/products', ProductsController::class);
