@@ -43,11 +43,6 @@ class ProductsController extends Controller
     
                 $product->image = Storage::url($path);
             }
-            // $image = $request->file('image');
-            // $name = time() .'.' . $image->getClientOriginalExtension();
-            // $destinationPath = public_path('/uploads/products');
-            // $imagePath = $destinationPath. '/' .  $name;
-            // $image->move($destinationPath, $name);
         }
 
         $product->save();
