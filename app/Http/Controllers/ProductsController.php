@@ -80,7 +80,23 @@ class ProductsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if (Product::where('id', $id)->exists()) {
+            $product = Product::find($id);
+
+            $product_prop = ['name', 'description', 'price', 'image'];
+
+            foreach ($product_prop as $prop) {
+                if (is_null($request->{$prop})) {
+                    $product->{$prop} = $product->{$prop};
+                } else {
+                    $product->{$prop} = $request->{$prop};
+                }
+            }
+            $product->save();
+            return response()->json(['messqge' => 'Product updated successfully.'], 200);
+        } else {
+            return response()->json(['messqge' => 'Product not found!'], 404);
+        }
     }
 
     /**
