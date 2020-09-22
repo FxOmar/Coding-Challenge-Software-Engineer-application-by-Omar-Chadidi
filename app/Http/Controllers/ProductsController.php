@@ -38,7 +38,7 @@ class ProductsController extends Controller
         $product->price = $request->price;
 
         if ($request->hasFile('image')) {
-            if ($request->file('photo')->isValid()) {
+            if ($request->file('image')->isValid()) {
                 $path = $request->file('image')->storePublicly('/public');
     
                 $product->image = Storage::url($path);
@@ -77,20 +77,31 @@ class ProductsController extends Controller
     {
         if (Product::where('id', $id)->exists()) {
             $product = Product::find($id);
-
+            
             $product_prop = ['name', 'description', 'price', 'image'];
 
             foreach ($product_prop as $prop) {
-                if (is_null($request->{$prop})) {
-                    $product->{$prop} = $product->{$prop};
-                } else {
+                // if ($prop === 'image') {
+                //     // $this->validate($request, [
+                //     //     'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+                //     // ]);
+                //     if ($request->file('image')->isValid()) {
+                //         $path = $request->file('image')->storePublicly('/public');
+            
+                //         $product->image = Storage::url($path);
+                //     }
+                // }
+                 if ($request->has($prop)) {
                     $product->{$prop} = $request->{$prop};
+                } else {
+                    $product->{$prop} = $product->{$prop};
                 }
             }
+
             $product->save();
-            return response()->json(['messqge' => 'Product updated successfully.'], 200);
+            return response()->json(['message' => 'Product updated successfully.'], 200);
         } else {
-            return response()->json(['messqge' => 'Product not found!'], 404);
+            return response()->json(['message' => 'Product not found!'], 404);
         }
     }
 
