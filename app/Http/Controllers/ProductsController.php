@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Product;
 
 
@@ -37,12 +38,14 @@ class ProductsController extends Controller
         $product->price = $request->price;
 
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $name = time() .'.' . $image->getClientOriginalExtension();
-            $destinationPath = public_path('/uploads/products');
-            $imagePath = $destinationPath. "/".  $name;
-            $image->move($destinationPath, $name);
-            $product->image = $name;
+            // $image = $request->file('image');
+            // $name = time() .'.' . $image->getClientOriginalExtension();
+            // $destinationPath = public_path('/uploads/products');
+            // $imagePath = $destinationPath. '/' .  $name;
+            // $image->move($destinationPath, $name);
+            $path = $request->file('image')->storePublicly('/public');
+
+            $product->image = Storage::url($path);
         }
 
         $product->save();
