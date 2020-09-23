@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Category;
 use App\Models\Product;
 
 
@@ -39,13 +40,22 @@ class ProductsController extends Controller
 
         if ($request->hasFile('image')) {
             if ($request->file('image')->isValid()) {
-                $path = $request->file('image')->storePublicly('/public');
+                $image = $request->file('image');
+                $name = time().'.'.$image->getClientOriginalExtension();
+                $destinationPath = public_path('/storage');
+                $image->move($destinationPath, $name);
     
-                $product->image = Storage::url($path);
+                $product->image = url('/') . '/storage/' . $name ;
             }
         }
 
         $product->save();
+
+        $categoies = $request->categories;
+
+        $category = Category::find($categoies);
+
+        $product->categories()->attach($category);
 
         return response()->json(['message' => 'Product created successfully.'], 200);
     }
@@ -78,19 +88,9 @@ class ProductsController extends Controller
         if (Product::where('id', $id)->exists()) {
             $product = Product::find($id);
             
-            $product_prop = ['name', 'description', 'price', 'image'];
+            $product_prop = ['name', 'description', 'price'];
 
             foreach ($product_prop as $prop) {
-                // if ($prop === 'image') {
-                //     // $this->validate($request, [
-                //     //     'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-                //     // ]);
-                //     if ($request->file('image')->isValid()) {
-                //         $path = $request->file('image')->storePublicly('/public');
-            
-                //         $product->image = Storage::url($path);
-                //     }
-                // }
                  if ($request->has($prop)) {
                     $product->{$prop} = $request->{$prop};
                 } else {
