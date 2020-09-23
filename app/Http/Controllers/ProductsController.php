@@ -16,7 +16,7 @@ class ProductsController extends Controller
      */
     public function index()
     {
-        $products = Product::get();
+        $products = Product::all()->load('categories');
         return response()->json($products, 200);
     }
 
@@ -59,7 +59,7 @@ class ProductsController extends Controller
     public function show($id)
     {
         if (Product::where('id', $id)->exists()) {
-            $product = Product::where('id', $id)->get();
+            $product = Product::find($id)->load('categories');
             return response()->json($product, 200);
         } else {
             return response()->json(['message' => "Product not found!"], 404);
