@@ -17,9 +17,11 @@ class Product extends Model
         'price',
         'image'
     ];
-
+    /**
+     * The categories that belong to the Product.
+     */
     public function categories()
     {
-        return $this->belongsToMany('App\Models\Category');
+        return $this->belongsToMany('App\Models\Category', 'category_product');
     }
 }
