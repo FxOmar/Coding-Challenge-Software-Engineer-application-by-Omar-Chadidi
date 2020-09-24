@@ -5,7 +5,7 @@
     <div class="article-details">
       <h4 class="post-category" v-for="category in product.categories" :key="category.id">{{ category.name }}</h4>
       <h3 class="post-title">{{ product.name }}</h3>
-      <p class="post-description">{{ product.description }}</p>
+      <p class="post-description">{{ product.description.slice(0, 100) }} ...</p>
     </div>
   </article>
 </a>

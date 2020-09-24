@@ -5,8 +5,8 @@
         <input type="text" v-model="name" placeholder="Oculus Quest 2"/>
     </div>
     <div class="form-grp">
-        <label>Category</label>
-        <input type="text" placeholder="T-short"/>
+      <label class="typo__label">Category</label>
+      <multiselect v-model="value" :options="options" :multiple="true"  placeholder="Type to search" track-by="id" label="name"><span slot="noResult">Oops! No elements found. Consider changing the search query.</span></multiselect>
     </div>
     <div class="form-grp">
         <label>Description*</label>
@@ -28,23 +28,40 @@
 
 <script>
 import Axios from 'axios'
+import Multiselect from 'vue-multiselect'
+
 
 export default {
+  props: {
+    options: {
+      type: Array,
+      default: []
+    }
+  },
   data: () => ({
     name: '',
     description:'', 
     price: 0,
-    image: null
+    image: null,
+    value: [],
+    categories: []
   }),
 
-  methods: {
-    async submit() {
+  components: {
+    Multiselect
+  },
 
+  methods: {
+    async submit () {
+      
       let formData = new FormData()
       formData.append('name', this.name)
       formData.append('description', this.description)
       formData.append('price', this.price)
       formData.append('image', this.image)
+
+      this.value.map(category => (this.categories.push(category.id)))
+      formData.append('categories', this.categories)
 
       await Axios.post('http://store.test/api/products', formData, 
       {
@@ -58,10 +75,11 @@ export default {
     onChangeFileUpload(){
       this.image = this.$refs.file.files[0];
     }
+
   }
 }
 </script>
-
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style lang="scss" scoped>
 $dark: #212121;
 $input-border-radius: 4px;

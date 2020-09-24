@@ -28,7 +28,7 @@
         </span>
       </button>
       <pop-up-form v-if="showPopUp" @close="showPopUp = false">
-          <product-form @close="showPopUp = false" @update="FetchProduct" />
+          <product-form @close="showPopUp = false" :options="categories.data" @update="FetchProduct" />
       </pop-up-form>
       <template v-for="product in products.data">
         <product-card :key="product.id" :product="product" />
