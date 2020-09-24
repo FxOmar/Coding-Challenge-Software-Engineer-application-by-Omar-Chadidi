@@ -51,7 +51,7 @@ class ProductsController extends Controller
 
         $product->save();
 
-        $categoies = $request->categories;
+        $categoies = array_map('intval', explode(',', $request->categories));
 
         $category = Category::find($categoies);
 
