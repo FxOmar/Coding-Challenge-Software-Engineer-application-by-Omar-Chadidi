@@ -35,22 +35,28 @@ export default {
   props: {
     options: {
       type: Array,
-      default: []
+      default: function () { return [] }
+    },
+    product: {
+      type: Object,
     }
   },
-  data: () => ({
-    name: '',
-    description:'', 
-    price: 0,
-    image: null,
-    value: [],
-    categories: []
-  }),
+
+  data () {
+    return {
+      name:  (!this.product? '' : this.product.name),
+      description: (!this.product? '' : this.product.description), 
+      price: (!this.product? 0 : this.product.price),
+      image: null,
+      value: (!this.product? [] : this.product.categories),
+      categories: []
+    }
+  },
 
   components: {
     Multiselect
   },
-
+  
   methods: {
     async submit () {
       
@@ -75,10 +81,10 @@ export default {
     onChangeFileUpload(){
       this.image = this.$refs.file.files[0];
     }
-
   }
 }
 </script>
+
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style lang="scss" scoped>
 $dark: #212121;

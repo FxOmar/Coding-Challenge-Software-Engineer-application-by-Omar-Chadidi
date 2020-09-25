@@ -1,11 +1,19 @@
 <template>
-<a class="card-link" href="#">
+<a class="card-link">
+    <div @click="$emit('edit')" class="pop-left">
+        <i class="fas fa-pen"></i>
+    </div>
   <article class="blog-card">
     <img class="post-image" :src="product.image" />
     <div class="article-details">
-      <h4 class="post-category" v-for="category in product.categories" :key="category.id">{{ category.name }}</h4>
-      <h3 class="post-title">{{ product.name }}</h3>
-      <p class="post-description">{{ product.description.slice(0, 100) }} ...</p>
+        <template v-for="category in product.categories">
+            <div style="display: inline; margin-left:.5em; margin-right:.5em;" :key="category.id">
+                <h4 class="post-category" >{{ category.name }}</h4>
+                <!-- <span style="font-size:10px; margin-left:1em; margin-right:1em;">&#9679;</span> -->
+            </div>
+        </template>
+        <h3 class="post-title">{{ product.name }}</h3>
+        <p class="post-description">{{ product.description.slice(0, 100) }} ...</p>
     </div>
   </article>
 </a>
@@ -36,6 +44,19 @@ $shadow: rgba(0, 0, 0, 0.2);
   transition: $args;
 }
 
+.pop-left {
+    background-color: $red;
+    color: $white;
+    display: inline;
+    padding: 10px 13px;
+    position: absolute;
+    top: 2.5rem;
+    left: -2.5rem;
+    z-index: 999;
+    display: none;
+    cursor: pointer;
+
+}
 .blog-card {
   display: flex;
   flex-direction: row;
@@ -50,7 +71,7 @@ $shadow: rgba(0, 0, 0, 0.2);
   display: block;
   color: inherit;
   text-decoration: none;
-  width: 30rem;
+  width: 37rem;
   margin-top: 2em;
   &:hover .post-title {
     @include transition(color 0.3s ease);
@@ -59,6 +80,13 @@ $shadow: rgba(0, 0, 0, 0.2);
   &:hover .post-image {
     @include transition(opacity 0.3s ease);
     opacity: 0.9;
+  }
+  &:hover .pop-left {
+    @include transition(display none ease);
+    display: inline-block;
+    &:hover {
+        background-color: #8a2230;
+    }
   }
 }
 

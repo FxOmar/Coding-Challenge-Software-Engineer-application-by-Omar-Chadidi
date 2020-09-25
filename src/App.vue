@@ -8,7 +8,7 @@
         </span>
       </button>
       <pop-up-form v-if="showCategoryPopUp" @close="showCategoryPopUp = false">
-          <category-form @close="showCategoryPopUp = false" @update="FetchCategory" />
+          <category-form @close="showCategoryPopUp = false" @update="FetchCategorys" />
       </pop-up-form>
       <div style="width: 50%;">
         <template v-for="category in categories.data">
@@ -22,18 +22,29 @@
   </section>
   <section id="products-section">
     <div>
-      <button @click="showPopUp = true" class="learn-more">
+      <button style="position: fixed;" @click="showPopUp = true" class="learn-more">
         <span class="circle" aria-hidden="true">
           <i class="fas fa-plus"></i>
         </span>
       </button>
       <pop-up-form v-if="showPopUp" @close="showPopUp = false">
-          <product-form @close="showPopUp = false" :options="categories.data" @update="FetchProduct" />
+          <product-form @close="showPopUp = false" :options="categories.data" @update="FetchProducts" />
       </pop-up-form>
       <template v-for="product in products.data">
-        <product-card :key="product.id" :product="product" />
+        <div style="position: relative;" :key="product.id">
+          <product-card  @edit="FetchProduct(product.id)" :product="product" />
+          <button @click="DeleteProduct(product.id)" class="card--dalate-button"><i class="fas fa-times"></i></button>
+        </div>
       </template>
+      <pop-up-form v-if="showEdit" @close="showEdit = false">
+        <product-form @close="showEdit = false" :product="product.data" :options="categories.data" @update="FetchProducts" />
+      </pop-up-form>
     </div>
+    <loading
+     :show="show"
+     :label="label"
+     :overlay="overlay">
+  </loading>
   </section>
 </div>
 </template>
@@ -45,6 +56,7 @@ import CategoryForm from './components/CategoryForm.vue'
 import ProductForm from './components/ProductForm.vue'
 import PopUpForm from './components/PopUpForm.vue'
 import Axios from 'axios'
+import loading from 'vue-full-loading'
 
 export default {
   name: 'App',
@@ -53,25 +65,45 @@ export default {
     Carousel,
     CategoryForm,
     ProductForm,
-    PopUpForm
+    PopUpForm,
+    loading
   },
   data: () => ({
     showPopUp: false,
     showCategoryPopUp: false,
+    showEdit: false,
     categories: [],
-    products: []
+    products: [],
+    product: null,
+    show: false,
+    label: 'Loading...',
+    overlay: true
   }),
   methods: {
+    async DeleteProduct (id) {
+      if (confirm('Are you sure you want to delete this product?')){
+        this.show = true
+        await Axios.delete(`http://store.test/api/products/${id}`)
+        this.FetchProduct()
+        this.show = false
+      }
+    },
+    async FetchProduct (id) {
+      this.show = true
+      this.product =  await Axios.get(`http://store.test/api/products/${id}`)
+      this.show = false
+      this.showEdit = true
+    },
     async FetchCategory () {
       this.categories = await Axios.get('http://store.test/api/categories')
     },
-    async FetchProduct () {
+    async FetchProducts () {
       this.products = await Axios.get('http://store.test/api/products')
     }
   },
   created () {
     this.FetchCategory()
-    this.FetchProduct()
+    this.FetchProducts()
   }
 }
 </script>
@@ -80,6 +112,20 @@ export default {
 $bg: #f3f8fa;
 $white: #fff;
 $black: #282936;
+$red: #e04f62;
+
+.card--dalate-button {
+    color:$black;
+    font-size: 1.0rem;
+    font-weight: 600;
+    display: block;
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    &:hover {
+      color: $red;
+    }
+}
 
 * {
   box-sizing: border-box;
@@ -100,7 +146,7 @@ body {
 
 button {
   position: absolute;
-  right: 19em;
+  right: 15em;
   display: inline-block;
   cursor: pointer;
   outline: none;
